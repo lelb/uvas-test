@@ -2,12 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import createPersistedState from "vuex-persistedstate";
 import createMutationsSharer from "vuex-shared-mutations";
-import VueNativeSock from 'vue-native-websocket'
 
 Vue.use(Vuex)
 
-
-// const url = 'wss://echo.websocket.org/'
 const transactionsUrl = 'wss://ws.blockchain.info/inv'
 
 export default new Vuex.Store({
@@ -29,7 +26,6 @@ export default new Vuex.Store({
 	],
 	state: {
 		persistedState: {
-			message: 'default',
 			defaultPositions: true,
 			tileDefaultWidth: 300,
 			tileDefaultHeight: 150,
@@ -43,12 +39,7 @@ export default new Vuex.Store({
 	},
 	getters: {},
 	mutations: {
-		updateMessage(state, message) {
-			state.persistedState.message = message
-		},
 		updateRect(state, tile) {
-
-			// state.persistedState.tiles.splice(tile.index, 1, {'rect': tile.rect})
 			state.persistedState.tiles[tile.index].rect = tile.rect
 		},
 		updateZIndex(state, index) {
@@ -70,7 +61,6 @@ export default new Vuex.Store({
 				box = document.querySelector('.tiles_wrapper'),
 				containerWidth = box.clientWidth,
 				tilesOffset = (containerWidth % state.persistedState.tileDefaultWidth) / (Math.floor(containerWidth / state.persistedState.tileDefaultWidth) - 1)
-			// box.style.width = '1100px'
 			state.persistedState.tiles.forEach(item => {
 				if (summWidth + item.rect.width > containerWidth) {
 					summWidth = 0
@@ -90,7 +80,7 @@ export default new Vuex.Store({
 		},
 		tilesCreate(state) {
 			if (state.persistedState.tiles.length !== 0) return false
-			for (var i = 1; i <= state.persistedState.defaultTilesNumber; i++) {
+			for (let i = 1; i <= state.persistedState.defaultTilesNumber; i++) {
 				state.persistedState.tiles.push({
 					id: i,
 					isActive: false,
@@ -138,16 +128,6 @@ export default new Vuex.Store({
 			state.transactionsConnection = connection
 		},
 		startListing(state, response) {
-			// let inputs = 0;
-			let outputs = 0;
-			// response.x.inputs.forEach(e => {
-			// 	inputs += e.prev_out.value
-			// })
-
-			// response.x.out.forEach(e => {
-			// 	// outputs += e.value
-			// 	console.log('e.addr: '+e.addr)
-			// })
 			state.transactionsSum += response.x.out[0].value / 100000000
 			state.transactionsList.push({
 				'from': response.x.inputs[0].addr,
@@ -155,9 +135,6 @@ export default new Vuex.Store({
 				'sum': response.x.out[0].value / 100000000
 			})
 		},
-		// stopListing(state) {
-		//
-		// },
 		resetListing(state) {
 			state.transactionsSum = 0
 			state.transactionsList = []
@@ -167,7 +144,7 @@ export default new Vuex.Store({
 	actions: {
 		transactionsConnect(context) {
 			const connection = new WebSocket(transactionsUrl)
-			connection.onopen = e => {
+			connection.onopen = () => {
 				context.commit('transactionsConnect', connection)
 			}
 		},
@@ -182,20 +159,6 @@ export default new Vuex.Store({
 		stopListing(context) {
 			context.state.transactionsConnection.send('{"op":"unconfirmed_unsub"}')
 		},
-// 		connection.onopen = function (evt) {
-// 			connection.send('{"op":"unconfirmed_sub"}');
-// 			console.log('Open')
-// 		};
-// connection.onclose = function (evt) {
-// 	console.log(evt)
-// };
-// connection.onmessage = function (evt) {
-// 	console.log(JSON.parse(evt.data))
-// 	connection.send('{"op":"unconfirmed_unsub"}');
-// };
-// connection.onerror = function (evt) {
-// 	console.log(evt)
-// };
 	}
 })
 

@@ -3,7 +3,6 @@
         <div id="output"></div>
         <a href="javascript:history.go(-1)"> Go Back</a>
         <h1>Dashboard page</h1>
-        <!--<input type="text" v-model="message">-->
         <div class="tiles_wrapper">
             <VueDragResize
                     v-for="(tile, index) in tiles"
@@ -56,14 +55,6 @@
 			tiles() {
 				return this.$store.state.persistedState.tiles
 			},
-			// message: {
-			// 	get() {
-			// 		return this.$store.state.persistedState.message
-			// 	},
-			// 	set(value) {
-			// 		this.$store.commit('updateMessage', value)
-			// 	}
-			// }
 		},
 		methods: {
 			resize(rect, index) {
